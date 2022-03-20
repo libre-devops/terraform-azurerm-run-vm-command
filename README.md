@@ -2,7 +2,7 @@
 
 Uses the VM agent to run PowerShell scripts (Windows) or shell scripts (Linux) within an Azure VM. It can be used to bootstrap/install software or run administrative tasks.
 
-As of version v1.0.4, I have made the module simpler by only accepting single commands without line splits, as there are better tools at managing remote state such as a config manager tool e.g. [Ansible](www.ansible.com), and a better tool to run more complex hosted file URI scripts, e.g. [Azure Custom Script Extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows).
+The module version matches the version of terraform it is intended to work with.
 
 This means this script is purely to bootstrap something where you want a one time execution, e.g. `sudo yum update -y`, or to install a tool or open a firewall port after the VM has been built.
 
