@@ -16,10 +16,6 @@ variable "vm_name" {
 variable "os_type" {
   description = "Specifies the operating system type."
   type        = string
-  validation {
-    condition     = var.os_type == "linux" || var.os_type == "windows"
-    error_message = "The OS type is not valid, it can only be linux or windows"
-  }
 }
 
 variable "command" {
