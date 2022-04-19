@@ -13,84 +13,88 @@ This means this script is purely to bootstrap something where you want a one tim
 
 ## Example Usage
 
-### Install cURL (Linux)
-
 ```hcl
-module "run_command" {
-  source   = "./PostInstall"
-  location = "US East"
-  rg_name  = "myResourceGroup"
-  vm_name  = "MyVMName"
-  os_type  = "linux"
+module "win_vm" {
+  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
-  command = "touch /it-works.txt && echo 'it works!' >> /it-works.txt && exit 0"
-}
-```
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
 
-### Install Chocolatey (Windows)
+  vm_amount          = 3
+  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
+  vm_size            = "Standard_B2ms"
+  vm_os_simple       = "WindowsServer2019"
+  vm_os_disk_size_gb = "127"
 
-```hcl
-resource "azurerm_resource_group" "vm-rg" {
-  name     = "vm-rg"
-  location = "UK South"
-}
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
-resource "azurerm_windows_virtual_machine" "win_vm" {
-  
-  name                  = var.vm_name
-  resource_group_name   = azurerm_resource_group.vm_rg.name
-  location              = azurerm_resource_group.vm_rg.location
-  ......
-  
-module "run_command" {
-  source               = "craigthackerx/terraform-azurerm-vm-run-command/PostInstall"
-  rg_name              = azurerm_resource_group.win_vm.name
-  vm_name              = azurerm_windows_virtual_machine.win_vm.name
-  location             = azurerm_resource_group.win_vm.name
-  os_type              = "windows"
+  admin_username = "LibreDevOpsAdmin"
+  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
 
-  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git"
-}
-```
+  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+  storage_account_type = "Standard_LRS"
+  identity_type        = "SystemAssigned"
 
-### Install Git (Linux)
-
-```hcl
-resource "azurerm_resource_group" "vm-rg" {
-  name     = "vm-rg"
-  location = "UK West"
+  tags = module.rg.rg_tags
 }
 
-resource "azurerm_linux_virtual_machine" "linux_vm" {
-  
-  name                  = "MyVM"
-  resource_group_name   = azurerm_resource_group.vm_rg.name
-  location              = azurerm_resource_group.vm_rg.location
-  ......
-  
+module "run_command_win" {
+  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
 
-module "run_command" {
-  source               = "https://github.com/craigthackerx/terraform-azurerm-vm-run-command/PostInstall"
-  rg_name              = azurerm_resource_group.vm-rg.name
-  vm_name              = azurerm_linux_virtual_machine.linux_vm.name
-  os_type              = "linux"
+  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
+  location   = module.rg.rg_location
+  rg_name    = module.rg.rg_name
+  vm_name    = element(module.win_vm.vm_name, 0)
+  os_type    = "windows"
+  tags       = module.rg.rg_tags
 
-  command = "apt-get update && apt-get install -y git && exit 0"
+  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
 }
-```
 
-### Install Updates (Windows)
+module "lnx_vm" {
+  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
 
-```hcl
-module "run_command" {
-  source               = "craigthackerx/terraform-azurerm-vm-run-command/PostInstall"
-  rg_name              = azurerm_resource_group.main.name
-  vm_name              = azurerm_windows_virtual_machine.main.name
-  location             = "US West"
-  os_type              = "windows"
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
 
-  command = "Get-WUInstall -MicrosoftUpdate -AcceptAll -IgnoreUserInput -IgnoreReboot ; Install-WindowsFeature -name Web-Server -IncludeManagementTools"
+  vm_amount          = 2
+  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
+  vm_size            = "Standard_B2ms"
+  vm_os_simple       = "Ubuntu20.04"
+  vm_os_disk_size_gb = "127"
+
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+
+  admin_username = "LibreDevOpsAdmin"
+  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
+  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with the Libre DevOps Terraform Pre-Requisite Script
+
+  subnet_id            = element(values(module.network.subnets_ids), 0)
+  availability_zone    = "alternate"
+  storage_account_type = "Standard_LRS"
+  identity_type        = "SystemAssigned"
+
+  tags = module.rg.rg_tags
 }
+
+module "run_command_lnx" {
+  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+
+  for_each = {
+    for key, value in module.lnx_vm.vm_name : key => value
+  }
+
+  depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
+  location   = module.rg.rg_location
+  rg_name    = module.rg.rg_name
+  vm_name    = each.value
+  os_type    = "linux"
+  tags       = module.rg.rg_tags
+
+  command = "echo hello > /home/libre-devops.txt" // Runs this commands on all Linux VMs
+}
+
 ```
 
 ## Requirements
