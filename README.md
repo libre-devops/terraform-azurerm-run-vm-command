@@ -97,6 +97,9 @@ module "run_command_lnx" {
 
 ```
 
+For a full example build, check out the [Libre DevOps Website](https://www.libredevops.org/quickstart/utils/terraform/using-lbdo-tf-modules-example.html)
+
+
 ## Requirements
 
 No requirements.
