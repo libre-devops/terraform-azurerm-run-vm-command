@@ -1,5 +1,6 @@
-variable "rg_name" {
-  description = "The name of the resource group."
+variable "command" {
+  default     = ""
+  description = "A string Command to be executed."
   type        = string
 }
 
@@ -8,20 +9,20 @@ variable "location" {
   type        = string
 }
 
-variable "vm_name" {
-  description = "The name of the virtual machine."
-  type        = string
-}
-
 variable "os_type" {
   description = "Specifies the operating system type."
   type        = string
 }
 
-variable "command" {
-  default     = ""
-  description = "A string Command to be executed."
+variable "rg_name" {
+  description = "The name of the resource group."
   type        = string
+}
+
+variable "tags" {
+  default     = {}
+  description = "A mapping of tags to assign to the extension."
+  type        = map(any)
 }
 
 variable "timestamp" {
@@ -30,8 +31,7 @@ variable "timestamp" {
 
 }
 
-variable "tags" {
-  default     = {}
-  description = "A mapping of tags to assign to the extension."
-  type        = map(any)
+variable "vm_name" {
+  description = "The name of the virtual machine."
+  type        = string
 }
