@@ -21,6 +21,10 @@ resource "azurerm_virtual_machine_extension" "linux_vm" {
 
   tags               = var.tags
   virtual_machine_id = data.azurerm_virtual_machine.azure_vm.id
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "azurerm_virtual_machine_extension" "windows_vm" {
@@ -37,4 +41,8 @@ resource "azurerm_virtual_machine_extension" "windows_vm" {
 
   tags               = var.tags
   virtual_machine_id = data.azurerm_virtual_machine.azure_vm.id
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
