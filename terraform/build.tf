@@ -66,82 +66,82 @@ module "bastion" {
   tags = module.rg.rg_tags
 }
 
-module "lnx_vm" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-
-  vm_amount          = 1
-  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}"
-  vm_size            = "Standard_B2ms"
-  vm_os_simple       = "Ubuntu22.04"
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
-
-  subnet_id            = element(values(module.network.subnets_ids), 0)
-  availability_zone    = "alternate"
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
-
-  tags = module.rg.rg_tags
-}
-
-module "run_command_lnx" {
-  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
-
-  depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
-  location   = module.rg.rg_location
-  rg_name    = module.rg.rg_name
-  tags       = module.rg.rg_tags
-
-  vm_name = element(module.lnx_vm.vm_name, 0)
-  os_type = "linux"
-
-  script_uri = "https://raw.githubusercontent.com/libre-devops/terraform-azurerm-run-vm-command/main/terraform/test-script.sh"
-}
-
-#// Default behaviour uses "registry.terraform.io/libre-devops/windows-os-plan-calculator/azurerm"
-#module "win_vm" {
-#  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+#module "lnx_vm" {
+#  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
 #
 #  rg_name  = module.rg.rg_name
 #  location = module.rg.rg_location
-#  tags     = module.rg.rg_tags
 #
 #  vm_amount          = 1
-#  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
-#  vm_size            = "Standard_D4s_v3"
-#  use_simple_image   = true
-#  vm_os_simple       = "WindowsServer2019"
+#  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}"
+#  vm_size            = "Standard_B2ms"
+#  vm_os_simple       = "Ubuntu22.04"
 #  vm_os_disk_size_gb = "127"
 #
-#  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_simple.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+#  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 #
 #  admin_username = "LibreDevOpsAdmin"
-#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
+#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
+#  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
 #
-#  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-#  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+#  subnet_id            = element(values(module.network.subnets_ids), 0)
+#  availability_zone    = "alternate"
 #  storage_account_type = "Standard_LRS"
 #  identity_type        = "SystemAssigned"
+#
+#  tags = module.rg.rg_tags
 #}
 #
-#module "run_command_win" {
+#module "run_command_lnx" {
 #  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
 #
-#  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
+#  depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
 #  location   = module.rg.rg_location
 #  rg_name    = module.rg.rg_name
 #  tags       = module.rg.rg_tags
 #
-#  vm_name = element(module.win_vm.vm_name, 0)
-#  os_type = "windows"
+#  vm_name = element(module.lnx_vm.vm_name, 0)
+#  os_type = "linux"
 #
-#  command = "apt-get update && apt-get dist-upgrade -y && apt-get install git unzip zip curl gcc dos2unix jq -y && apt-get autoclean && exit 0"
+#  script_uri = "https://raw.githubusercontent.com/libre-devops/terraform-azurerm-run-vm-command/main/terraform/test-script.sh"
 #}
+
+// Default behaviour uses "registry.terraform.io/libre-devops/windows-os-plan-calculator/azurerm"
+module "win_vm" {
+  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  vm_amount          = 1
+  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
+  vm_size            = "Standard_D4s_v3"
+  use_simple_image   = true
+  vm_os_simple       = "WindowsServer2019"
+  vm_os_disk_size_gb = "127"
+
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+
+  admin_username = "LibreDevOpsAdmin"
+  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
+
+  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+  storage_account_type = "Standard_LRS"
+  identity_type        = "SystemAssigned"
+}
+
+module "run_command_win" {
+  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+
+  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
+  location   = module.rg.rg_location
+  rg_name    = module.rg.rg_name
+  tags       = module.rg.rg_tags
+
+  vm_name = element(module.win_vm.vm_name, 0)
+  os_type = "windows"
+
+  script_file = file("${path.cwd}/Test-Script.ps1")
+}
