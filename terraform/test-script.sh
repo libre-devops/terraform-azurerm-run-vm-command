@@ -1,0 +1,1 @@
+echo "this is a test" > /home/test.txt

@@ -1,0 +1,1 @@
+Write-Output "hello" > C:/Users/test.txt
