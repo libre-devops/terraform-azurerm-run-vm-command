@@ -27,7 +27,7 @@ resource "azurerm_virtual_machine_extension" "linux_vm_uri_command" {
   auto_upgrade_minor_version = true
 
   protected_settings = jsonencode({
-    fileUris = compact(tostring(var.script_uri))
+    fileUris = compact(var.script_uri)
   })
 
   tags               = var.tags
@@ -47,7 +47,7 @@ resource "azurerm_virtual_machine_extension" "linux_vm_file_command" {
   auto_upgrade_minor_version = true
 
   protected_settings = jsonencode({
-    script = compact(tostring(var.script_file))
+    script = compact(var.script_file)
   })
 
   tags               = var.tags
