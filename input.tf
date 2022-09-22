@@ -21,13 +21,11 @@ variable "rg_name" {
 
 variable "script_file" {
   description = "A path to a local file for the script"
-  type        = string
   default     = null
 }
 
 variable "script_uri" {
   description = "A URI for the script to be input raw"
-  type        = string
   default     = null
 }
 

@@ -33,8 +33,8 @@ No modules.
 | <a name="input_location"></a> [location](#input\_location) | Location of resources | `string` | n/a | yes |
 | <a name="input_os_type"></a> [os\_type](#input\_os\_type) | Specifies the operating system type. | `string` | n/a | yes |
 | <a name="input_rg_name"></a> [rg\_name](#input\_rg\_name) | The name of the resource group. | `string` | n/a | yes |
-| <a name="input_script_file"></a> [script\_file](#input\_script\_file) | A path to a local file for the script | `string` | `null` | no |
-| <a name="input_script_uri"></a> [script\_uri](#input\_script\_uri) | A URI for the script to be input raw | `string` | `null` | no |
+| <a name="input_script_file"></a> [script\_file](#input\_script\_file) | A path to a local file for the script | `any` | `null` | no |
+| <a name="input_script_uri"></a> [script\_uri](#input\_script\_uri) | A URI for the script to be input raw | `any` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the extension. | `map(any)` | `{}` | no |
 | <a name="input_vm_name"></a> [vm\_name](#input\_vm\_name) | The name of the virtual machine. | `string` | n/a | yes |
 
