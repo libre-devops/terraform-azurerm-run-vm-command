@@ -103,7 +103,7 @@ module "run_command_lnx" {
   vm_name = element(module.lnx_vm.vm_name, 0)
   os_type = "linux"
 
-  script_uri = ""
+  script_uri = "https://raw.githubusercontent.com/libre-devops/terraform-azurerm-run-vm-command/main/terraform/test-script.sh"
 }
 
 #// Default behaviour uses "registry.terraform.io/libre-devops/windows-os-plan-calculator/azurerm"
