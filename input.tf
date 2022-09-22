@@ -24,11 +24,6 @@ variable "script_file" {
   default     = null
 }
 
-variable "script_uri" {
-  description = "A URI for the script to be input raw"
-  default     = null
-}
-
 variable "tags" {
   description = "A mapping of tags to assign to the extension."
   default     = {}
