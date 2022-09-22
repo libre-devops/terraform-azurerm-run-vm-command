@@ -19,7 +19,7 @@ resource "azurerm_virtual_machine_extension" "linux_vm_inline_command" {
 }
 
 resource "azurerm_virtual_machine_extension" "linux_vm_uri_command" {
-  count                      = lower(var.os_type) == "linux" && try(var.script_uri, null) == null && try(var.script_file, null) != null && try(var.command, null) == null ? 1 : 0
+  count                      = lower(var.os_type) == "linux" && try(var.script_uri, null) != null && try(var.script_file, null) == null && try(var.command, null) == null ? 1 : 0
   name                       = "${var.vm_name}-run-command"
   publisher                  = "Microsoft.CPlat.Core"
   type                       = "RunCommandLinux"
