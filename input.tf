@@ -1,6 +1,6 @@
 variable "command" {
-  default     = ""
   description = "A string Command to be executed."
+  default     = null
   type        = string
 }
 
@@ -19,16 +19,22 @@ variable "rg_name" {
   type        = string
 }
 
-variable "tags" {
-  default     = {}
-  description = "A mapping of tags to assign to the extension."
-  type        = map(any)
+variable "script_file" {
+  description = "A path to a local file for the script"
+  type        = string
+  default     = null
 }
 
-variable "timestamp" {
-  default     = ""
-  description = "Intended to trigger re-execution of the script when changed."
+variable "script_uri" {
+  description = "A URI for the script to be input raw"
+  type        = string
+  default     = null
+}
 
+variable "tags" {
+  description = "A mapping of tags to assign to the extension."
+  default     = {}
+  type        = map(any)
 }
 
 variable "vm_name" {
