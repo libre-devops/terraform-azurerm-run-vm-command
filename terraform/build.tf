@@ -53,7 +53,7 @@ module "bastion" {
   ip_connect_enabled     = true
   scale_units            = 2
   shareable_link_enabled = true
-  tunneling_enabled      = true
+  tunneling_enabled      = false
   bas_nsg_name           = "nsg-bas-${var.short}-${var.loc}-${terraform.workspace}-01"
   bas_nsg_location       = module.rg.rg_location
   bas_nsg_rg_name        = module.rg.rg_name
