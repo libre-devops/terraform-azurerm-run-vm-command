@@ -49,7 +49,7 @@ module "bastion" {
 
   bas_subnet_iprange     = "10.0.4.0/26"
   sku                    = "Standard"
-  file_copy_enabbled     = true
+  file_copy_enabled     = true
   ip_connect_enabled     = true
   scale_units            = 2
   shareable_link_enabled = true
